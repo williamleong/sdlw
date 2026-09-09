@@ -1,0 +1,90 @@
+world:
+  height: 20
+  width: 20
+  step_time: 0.1  # 10Hz simulation for accurate physics
+  sample_time: 0.1  # 10Hz rendering to match fps=10
+  offset: [0, 0]
+  collision_mode: 'stop'
+  control_mode: 'auto'
+
+gui:
+  keyboard:
+    backend: 'mpl'
+
+robot:
+  - number: 1  # Will be overridden by run_simulation.py
+    kinematics: {name: 'omni', noise: False}
+    shape: 
+      name: 'polygon'
+      vertices: 
+        - [0, -0.05]
+        - [0, 0.05]
+        - [0.1, 0]
+    distribution: {name: 'random', x_range: [1, 19], y_range: [1, 19]}
+    velocity: [0.5, 0.5]
+
+    behavior: { 
+      name: 'levy',
+      max_vel: 0.5,
+      max_yaw: 0.5,
+      alpha_min: 2.0,
+      alpha_max: 3.0,
+      min_flight_distance: 0.5,
+      max_flight_distance: 20.0,
+      collision_threshold: 0.4,
+      back_sensor_weight: 0.3,
+      kappa_min: 0.6,
+      kappa_max: 10.0,
+      mode: 'reactive_levy'  # 'reactive_levy', 'unbiased_levy'
+    }
+
+    sensors:
+      - name: 'lidar2d'  # front
+        range_min: 0
+        range_max: 4
+        offset: [0, 0, 0]
+        angle_range: 0
+        number: 1
+        noise: False
+
+      - name: 'lidar2d'  # left
+        range_min: 0
+        range_max: 4
+        offset: [0, 0, 1.57]
+        angle_range: 0
+        number: 1
+        noise: False
+
+      - name: 'lidar2d'  # right
+        range_min: 0
+        range_max: 4
+        offset: [0, 0, -1.57]
+        angle_range: 0
+        number: 1
+        noise: False
+
+      - name: 'lidar2d'  # back
+        range_min: 0
+        range_max: 4
+        offset: [0, 0, 3.14]
+        angle_range: 0
+        number: 1
+        noise: False
+
+obstacle:
+  # Borders around entire map
+  # Top border
+  - shape: {name: 'rectangle', length: 20, width: 0.1}
+    state: [10, 19.95, 0]
+
+  # Bottom border
+  - shape: {name: 'rectangle', length: 20, width: 0.1}
+    state: [10, 0.05, 0]
+
+  # Left border
+  - shape: {name: 'rectangle', length: 0.1, width: 20}
+    state: [0.05, 10, 0]
+
+  # Right border
+  - shape: {name: 'rectangle', length: 0.1, width: 20}
+    state: [19.95, 10, 0]

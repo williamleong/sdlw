@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Conda tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out SDLW
+        uses: actions/checkout@v7
+
+      - name: Check out IR-SIM v2.9.0
+        uses: actions/checkout@v7
+        with:
+          repository: hanruihua/ir-sim
+          ref: v2.9.0
+          path: .ci/ir-sim
+
+      - name: Create pinned Conda environment
+        uses: mamba-org/setup-micromamba@v3
+        with:
+          environment-file: environment.yml
+          cache-environment: true
+          cache-downloads: true
+          post-cleanup: all
+
+      - name: Install IR-SIM
+        shell: micromamba-shell {0}
+        run: python -m pip install ./.ci/ir-sim
+
+      - name: Check dependency integrity
+        shell: micromamba-shell {0}
+        run: python -m pip check
+
+      - name: Compile Python sources
+        shell: micromamba-shell {0}
+        run: >-
+          python -m compileall -q -f
+          beh_omni_levy.py
+          config.py
+          metrics_utils.py
+          position_generation.py
+          run_simulation.py
+          tests
+
+      - name: Run test suite
+        shell: micromamba-shell {0}
+        run: python -m pytest tests/ -q

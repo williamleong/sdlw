@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite the associated IROS 2026 paper."
+title: "Sensor-Driven Lévy Walk (SDLW)"
+authors:
+  - family-names: "Leong"
+    given-names: "Wai Lun"
+  - family-names: "Teo"
+    given-names: "Swee Huat Rodney"
+year: 2026
+license: MIT
+repository-code: "https://github.com/williamleong/sdlw"
+preferred-citation:
+  type: conference-paper
+  title: "Decentralized Scalable Exploration via Emergent Adaptive Lévy Walks on Minimal-Sensing Platforms"
+  authors:
+    - family-names: "Leong"
+      given-names: "Wai Lun"
+    - family-names: "Teo"
+      given-names: "Swee Huat Rodney"
+  conference:
+    name: "2026 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)"
+    location: "Pittsburgh, PA, USA"
+  year: 2026

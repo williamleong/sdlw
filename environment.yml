@@ -1,0 +1,10 @@
+name: sdlw-sim
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python=3.11.15
+  - pip=26.1.2
+  - ffmpeg=7.1.1
+  - pip:
+      - -r requirements.txt
