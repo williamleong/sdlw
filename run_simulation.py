@@ -49,6 +49,7 @@ class SimulationConfig:
     arena_dir: str
     save_animation: bool
     animation_format: str
+    display: bool = False
 
     def __post_init__(self) -> None:
         if self.team_size <= 0:
@@ -101,6 +102,7 @@ def build_parser() -> argparse.ArgumentParser:
         default="mp4",
         help="Animation format for saved animations",
     )
+    parser.add_argument("--display", action="store_true", help="Show live simulation window")
     parser.add_argument("--verbose", action="store_true", help="Print per-simulation progress")
     return parser
 
@@ -277,7 +279,7 @@ def create_environment(config_path: Path, config: SimulationConfig, output_folde
 
     env = irsim.make(
         str(config_path),
-        display=False,
+        display=config.display,
         seed=config.seed,
         log_level="WARNING",
         save_ani=config.save_animation,
@@ -348,7 +350,7 @@ def execute_simulation_loop(env, metrics: ExperimentMetrics, coverage_state: Dic
             )
             last_progress_time = env.time
 
-        if config.save_animation:
+        if config.display or config.save_animation:
             env._env_plot.ax.set_title(f"Simulation Time: {env.time:.2f}s", pad=3)
             visited_counts = coverage_state.get("visit_counts", coverage_state["visited"]).copy()
             visited_counts[coverage_state["obstacles"]] = 0
@@ -437,6 +439,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         arena_dir=args.arena_dir,
         save_animation=args.save_animation,
         animation_format=args.animation_format,
+        display=args.display,
     )
     output_folder = resolve_repo_path(args.output)
 

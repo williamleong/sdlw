@@ -67,6 +67,7 @@ python run_simulation.py \
 Operational notes:
 
 - The default duration is 120 simulated seconds; the examples below explicitly use 600 seconds.
+- Live display is off by default. Use `--display` to open a simulation window on a desktop with an interactive Matplotlib backend. Display and animation saving are independent.
 - Animation is enabled by default and requires FFmpeg. Rendering and encoding increase wall-clock time and disk usage.
 - Wall-clock runtime depends on arena complexity, team size, animation settings, and host performance; simulated seconds are not expected to match real seconds.
 - For a quick headless smoke run, use a short `--max-time` together with `--no-save-animation`.
@@ -80,6 +81,7 @@ Useful options:
 - `--seed`: random seed for obstacle generation, spawn placement, and controller behavior
 - `--max-time`: simulation duration in seconds
 - `--output`: output folder for this run
+- `--display`: show the simulation live (requires a graphical desktop)
 - `--no-save-animation`: disable animation output; animations are saved by default
 - `--animation-format`: `mp4` or `gif`
 
@@ -101,6 +103,17 @@ python run_simulation.py \
   --max-time 600 \
   --animation-format mp4 \
   --output results/rooms_corridors
+```
+
+Watch a live run without saving an animation:
+
+```bash
+python run_simulation.py \
+  --arena rooms_corridors \
+  --team-size 8 \
+  --seed 0 \
+  --display \
+  --no-save-animation
 ```
 
 Disable animation for a faster metrics-only run:

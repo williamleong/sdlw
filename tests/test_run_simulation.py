@@ -182,6 +182,37 @@ def test_cli_runs_real_headless_simulation(mode, tmp_path):
     assert resolved["robot"][0]["behavior"]["seed"] == 7
 
 
+def test_cli_displays_live_without_saving_animation(monkeypatch, tmp_path):
+    from irsim.env.env_base import EnvBase
+
+    rendered_frames = []
+    original_render = EnvBase.render
+
+    def record_render(self, *args, **kwargs):
+        rendered_frames.append(self.display)
+        return original_render(self, *args, **kwargs)
+
+    monkeypatch.setattr(EnvBase, "render", record_render)
+    monkeypatch.setattr("matplotlib.pyplot.pause", lambda _seconds: None)
+
+    exit_code = main([
+        "--arena", "open",
+        "--team-size", "1",
+        "--seed", "0",
+        "--max-time", "0.2",
+        "--display",
+        "--no-save-animation",
+        "--output", str(tmp_path),
+    ])
+
+    summary = json.loads((tmp_path / "summary.json").read_text(encoding="utf-8"))
+    assert exit_code == 0
+    assert summary["status"] == "complete"
+    assert summary["simulation"]["display"] is True
+    assert rendered_frames and all(rendered_frames)
+    assert not (tmp_path / "animations").exists()
+
+
 def test_write_simulation_outputs_creates_json_summary_and_coverage_csv(tmp_path):
     metrics = ExperimentMetrics()
     metrics.record_collision_step(1.0, 1)
@@ -223,6 +254,7 @@ def test_write_simulation_outputs_creates_json_summary_and_coverage_csv(tmp_path
         "arena_dir": "arenas",
         "save_animation": False,
         "animation_format": "mp4",
+        "display": False,
     }
     assert summary["metrics"] == {
         "collision_count": 1,
